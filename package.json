@@ -1,8 +1,22 @@
 {
   "name": "lazy-terminal",
   "displayName": "lazy-terminal",
-  "description": "an extension for lazy programmers that let's you click on the most used commands instead of typing them",
+  "description": "Click your most-used terminal commands instead of typing them. Save macros, use env vars, run with args.",
   "version": "0.0.1",
+  "icon": "icon.png",
+  "publisher": "salama135",
+  "keywords": [
+    "terminal",
+    "macros",
+    "commands",
+    "productivity"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/salama135/lazy-terminal"
+  },
+  "homepage": "https://github.com/salama135/lazy-terminal#readme",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.120.0"
   },
@@ -11,7 +25,7 @@
   ],
   "activationEvents": [
     "onTerminalShellIntegration"
-],
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
