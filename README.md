@@ -1,71 +1,70 @@
-# lazy-terminal README
+# Lazy Terminal
 
-This is the README for your extension "lazy-terminal". After writing up a brief description, we recommend including the following sections.
-
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+Stop retyping your most-used terminal commands. Save them as one-click macros, wire up env vars, and run commands with custom args — all from a compact panel in VS Code.
 
 ---
 
-## Following extension guidelines
+## Features
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+### ▶ One-Click Macros
+Save any shell command as a labeled button. Click to run it in the active terminal instantly.
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+### ▶+ Run with Args
+Need to pass extra flags without saving a separate macro? Hit the **▶+** button to append args on the fly before running.
 
-## Working with Markdown
+```
+Base command:  npm run dev
+Extra args:    --port $PORT --open
+Final command: npm run dev --port 3000 --open
+```
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+### ENV Vars
+Define key-value pairs and reference them in any command using `$KEY` or `${KEY}` syntax. Supports recursive variables — vars that reference other vars.
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+```
+PORT = 3000
+HOST = localhost
+URL  = $HOST:$PORT        →  resolves to: localhost:3000
+CMD  = curl $URL/health   →  resolves to: curl localhost:3000/health
+```
 
-## For more information
+### 📌 Pin & Sort
+Pin your most critical macros to keep them at the top. Commands auto-sort by usage count so your most-run commands are always first.
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+### 🔁 Auto-Capture
+Run any command in your terminal and Lazy Terminal will ask if you want to save it as a macro — no manual setup needed.
 
-**Enjoy!**
+---
+
+## Usage
+
+The **Lazy Terminal** panel appears in the bottom panel area (next to Terminal, Output, etc.).
+
+| Button | Action |
+|--------|--------|
+| **▶** | Run the command |
+| **▶+** | Run with extra args |
+| **↑ / ↓** | Pin / Unpin |
+| **✕** | Remove macro |
+| **ENV** | Toggle env vars panel |
+| **+ Add** | Add a new macro manually |
+
+---
+
+## Requirements
+
+- VS Code `^1.84.0`
+- Shell integration enabled (default in VS Code) for auto-capture feature
+
+---
+
+## Extension Settings
+
+No settings required. All macros and env vars are stored in VS Code's global state and persist across sessions.
+
+---
+
+## Release Notes
+
+### 0.0.1
+Initial release — macros, env vars with recursive resolution, run-with-args, pin, auto-capture.
