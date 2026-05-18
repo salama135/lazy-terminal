@@ -69,5 +69,5 @@ No settings required. All macros and env vars are stored in VS Code's global sta
 
 ## Release Notes
 
-### 0.0.3
+### 0.0.4
 Initial release — macros, env vars with recursive resolution, run-with-args, pin, auto-capture.

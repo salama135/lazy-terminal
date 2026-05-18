@@ -2,7 +2,7 @@
   "name": "lazy-terminal",
   "displayName": "lazy-terminal",
   "description": "Click your most-used terminal commands instead of typing them. Save macros, use env vars, run with args.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "icon": "icon.png",
   "publisher": "ahmedsalama",
   "keywords": [
