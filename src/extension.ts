@@ -47,7 +47,8 @@ export function activate(context: vscode.ExtensionContext) {
     context.globalState.update('macros', commands);
     context.globalState.update('macroEnvVars', envVars);
   };
-  const refresh = () => { if (view) view.webview.html = buildHtml(commands, envVars); };
+  let codiconsUri = '';
+  const refresh = () => { if (view) view.webview.html = buildHtml(commands, envVars, codiconsUri); };
 
   /** Replace $KEY / ${KEY} recursively — e.g. URL=localhost:$PORT resolves $PORT too.
    *  Loops until stable or 10 iterations (guards against circular refs like A=$B B=$A). */
@@ -67,8 +68,14 @@ export function activate(context: vscode.ExtensionContext) {
   const provider: vscode.WebviewViewProvider = {
     resolveWebviewView(wv) {
       view = wv;
-      wv.webview.options = { enableScripts: true };
-      wv.webview.html = buildHtml(commands, envVars);
+      wv.webview.options = {
+        enableScripts: true,
+        localResourceRoots: [context.extensionUri],
+      };
+      codiconsUri = wv.webview.asWebviewUri(
+        vscode.Uri.joinPath(context.extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css')
+      ).toString();
+      wv.webview.html = buildHtml(commands, envVars, codiconsUri);
 
       wv.webview.onDidReceiveMessage(async (msg) => {
         switch (msg.type) {
@@ -239,7 +246,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 // ─── HTML builder ─────────────────────────────────────────────────────────────
 
-function buildHtml(cmds: MacroCommand[], envVars: EnvVar[]): string {
+function buildHtml(cmds: MacroCommand[], envVars: EnvVar[], codiconsUri: string): string {
 
   const sorted = cmds
     .map((c, i) => ({ ...c, originalIndex: i }))
@@ -252,7 +259,7 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[]): string {
   const chips = sorted.map(c => `
     <div class="chip${c.pinned ? ' pinned' : ''}" data-index="${c.originalIndex}">
       <span class="dot" style="background:${c.color}"></span>
-      ${c.pinned ? '<span class="pin-mark">⊤</span>' : ''}
+      ${c.pinned ? '<span class="codicon codicon-pin pin-mark"></span>' : ''}
       <span class="chip-label">${esc(c.label)}</span>
       ${c.usageCount > 0 ? `<span class="badge">${c.usageCount}</span>` : ''}
     </div>
@@ -263,14 +270,14 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[]): string {
     ? sorted.map(c => `
       <div class="row${c.pinned ? ' pinned' : ''}">
         <span class="row-dot" style="background:${c.color}"></span>
-        <span class="row-label">${esc(c.label)}${c.pinned ? ' <span class="pin-icon">⊤</span>' : ''}</span>
+        <span class="row-label">${esc(c.label)}${c.pinned ? ' <span class="codicon codicon-pin pin-icon"></span>' : ''}</span>
         <span class="row-cmd">${esc(c.cmd)}</span>
         <span class="row-desc">${esc(c.desc || '—')}</span>
         <div class="row-actions">
-          <button class="row-btn btn-run"  data-index="${c.originalIndex}" title="Run">▶</button>
-          <button class="row-btn btn-args" data-index="${c.originalIndex}" title="Run with extra args">▶+</button>
-          <button class="row-btn btn-pin"  data-index="${c.originalIndex}" title="${c.pinned ? 'Unpin' : 'Pin'}">${c.pinned ? '↓' : '↑'}</button>
-          <button class="row-btn btn-del"  data-index="${c.originalIndex}" title="Remove">✕</button>
+          <button class="row-btn btn-run"  data-index="${c.originalIndex}" title="Run"><span class="codicon codicon-run"></span></button>
+          <button class="row-btn btn-args" data-index="${c.originalIndex}" title="Run with args"><span class="codicon codicon-run-above"></span></button>
+          <button class="row-btn btn-pin" data-index="${c.originalIndex}" title="${c.pinned ? 'Unpin' : 'Pin'}"><span class="codicon ${c.pinned ? 'codicon-pinned' : 'codicon-pin'}"></span></button>
+          <button class="row-btn btn-del"  data-index="${c.originalIndex}" title="Remove"><span class="codicon codicon-trash"></span></button>
         </div>
       </div>`).join('')
     : `<div class="empty-state">No macros yet — click <strong>+ Add</strong> to create one.</div>`;
@@ -282,7 +289,7 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[]): string {
         <span class="env-key">$${esc(e.key)}</span>
         <span class="env-eq">=</span>
         <span class="env-val">${esc(e.value)}</span>
-        <button class="env-del" data-index="${i}" title="Remove">✕</button>
+        <button class="env-del" data-index="${i}" title="Remove"><span class="codicon codicon-close"></span></button>
       </div>`).join('')
     : `<span class="env-empty">No env vars. Add one to use as <code>$KEY</code> in commands.</span>`;
 
@@ -290,7 +297,8 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[]): string {
 <html>
 <head>
 <meta http-equiv="Content-Security-Policy"
-  content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';">
+  content="default-src 'none'; style-src 'unsafe-inline' vscode-resource:; font-src vscode-resource:; script-src 'unsafe-inline';">
+<link rel="stylesheet" href="${codiconsUri}" />
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -458,7 +466,7 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[]): string {
 
   .list-header {
     display: grid;
-    grid-template-columns: 6px 65px minmax(100px,1fr) minmax(80px,1fr) 94px;
+    grid-template-columns: 6px 55px minmax(80px,1fr) minmax(60px,1fr) 80px;
     gap: 8px;
     padding: 3px 8px;
     font-size: 9px;
@@ -473,7 +481,7 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[]): string {
 
   .row {
     display: grid;
-    grid-template-columns: 6px 65px minmax(100px,1fr) minmax(80px,1fr) 94px;
+    grid-template-columns: 6px 55px minmax(80px,1fr) minmax(60px,1fr) 80px;
     align-items: center;
     gap: 8px;
     padding: 4px 8px;
@@ -511,19 +519,23 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[]): string {
     text-overflow: ellipsis;
   }
 
-  .row-actions { display: flex; gap: 3px; }
+  .row-actions { display: flex; gap: 2px; overflow: hidden; }
 
   .row-btn {
     background: none;
     border: 1px solid;
     cursor: pointer;
     font-size: 9px;
-    padding: 1px 5px;
+    padding: 1px 3px;
     border-radius: 2px;
     font-family: var(--vscode-font-family);
     line-height: 14px;
     opacity: 0.65;
     white-space: nowrap;
+    width: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .row-btn:hover { opacity: 1; }
 
@@ -536,7 +548,7 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[]): string {
   .btn-del  { color: var(--vscode-errorForeground); border-color: var(--vscode-errorForeground); }
   .btn-del:hover  { background: var(--vscode-errorForeground); color: #fff; }
 
-  .empty-state {
+  .codicon { font-size: 14px !important; vertical-align: middle; }
     padding: 12px 8px;
     color: var(--vscode-descriptionForeground);
     font-size: 11px;
