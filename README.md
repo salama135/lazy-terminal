@@ -4,7 +4,7 @@ Stop retyping your most-used terminal commands. Save them as one-click macros, w
 
 ---
 
-[!screenshot](./Capture.PNG)
+![screenshot](./Capture.png)
 
 
 ## Features
