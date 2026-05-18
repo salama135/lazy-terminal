@@ -52,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.globalState.update('macros', commands);
     context.globalState.update('macroEnvVars', envVars);
   };
-  const refresh = () => { if (view) view.webview.html = buildHtml(commands, envVars, codiconsUri); };
+  const refresh = () => { if (view) { view.webview.html = buildHtml(commands, envVars, codiconsUri); } };
 
   /** Resolve $KEY / ${KEY} recursively — handles chained vars up to 10 passes */
   const resolveEnv = (cmd: string): string => {
@@ -60,7 +60,7 @@ export function activate(context: vscode.ExtensionContext) {
     for (let i = 0; i < 10; i++) {
       const next = envVars.reduce((acc, { key, value }) =>
         acc.replace(new RegExp(`\\$\\{${key}\\}|\\$${key}\\b`, 'g'), value), result);
-      if (next === result) break;
+      if (next === result) { break; }
       result = next;
     }
     return result;
@@ -105,7 +105,7 @@ export function activate(context: vscode.ExtensionContext) {
               prompt: `Extra args appended to: ${macro.cmd}`,
               placeHolder: `e.g. --port 3001  (${envHint})`,
             });
-            if (args === undefined) break;
+            if (args === undefined) { break; }
             commands[msg.index].usageCount++;
             save();
             const t = vscode.window.activeTerminal ?? vscode.window.createTerminal('Macros');
@@ -130,17 +130,17 @@ export function activate(context: vscode.ExtensionContext) {
             const label = await vscode.window.showInputBox({
               title: `Edit "${macro.label}" — 1 of 4`, prompt: 'Button label', value: macro.label,
             });
-            if (label === undefined) break;
+            if (label === undefined) { break; }
 
             const cmd = await vscode.window.showInputBox({
               title: `Edit "${macro.label}" — 2 of 4`, prompt: 'Shell command', value: macro.cmd,
             });
-            if (cmd === undefined) break;
+            if (cmd === undefined) { break; }
 
             const desc = await vscode.window.showInputBox({
               title: `Edit "${macro.label}" — 3 of 4`, prompt: 'Description', value: macro.desc,
             });
-            if (desc === undefined) break;
+            if (desc === undefined) { break; }
 
             // Step 4: group — show quick-pick of existing groups + option to enter new
             const existingGroups = [...new Set(commands.map(c => c.group).filter(Boolean))];
@@ -151,7 +151,7 @@ export function activate(context: vscode.ExtensionContext) {
                 ['(no group)', ...existingGroups, '+ New group…'],
                 { title: `Edit "${macro.label}" — 4 of 4`, placeHolder: 'Assign to a group' }
               );
-              if (pick === undefined) break;
+              if (pick === undefined) { break; }
               if (pick === '+ New group…') {
                 const ng = await vscode.window.showInputBox({ prompt: 'New group name' });
                 group = ng?.trim().toLowerCase() ?? '';
@@ -165,7 +165,7 @@ export function activate(context: vscode.ExtensionContext) {
                 value: macro.group,
                 placeHolder: 'e.g. docker, git, npm',
               });
-              if (ng === undefined) break;
+              if (ng === undefined) { break; }
               group = ng.trim().toLowerCase();
             }
 
@@ -193,7 +193,7 @@ export function activate(context: vscode.ExtensionContext) {
             const pick = await vscode.window.showWarningMessage(
               `Remove macro "${label}"?`, { modal: true }, 'Remove'
             );
-            if (pick !== 'Remove') break;
+            if (pick !== 'Remove') { break; }
             commands.splice(msg.index, 1);
             save(); refresh();
             break;
@@ -204,7 +204,7 @@ export function activate(context: vscode.ExtensionContext) {
             const label = await vscode.window.showInputBox({
               title: 'New Macro — 1 of 4', prompt: 'Button label', placeHolder: 'e.g. Dev Server',
             });
-            if (!label) break;
+            if (!label) { break; }
 
             const envHint = envVars.length
               ? `Tip: use $${envVars[0].key} as a placeholder`
@@ -214,7 +214,7 @@ export function activate(context: vscode.ExtensionContext) {
               prompt: `Shell command. ${envHint}`,
               placeHolder: 'e.g. npm run dev -- --port $PORT',
             });
-            if (!cmd) break;
+            if (!cmd) { break; }
 
             const desc = await vscode.window.showInputBox({
               title: 'New Macro — 3 of 4', prompt: 'Short description', placeHolder: 'e.g. Start Vite dev server',
@@ -227,7 +227,7 @@ export function activate(context: vscode.ExtensionContext) {
                 ['(no group)', ...existingGroups, '+ New group…'],
                 { title: 'New Macro — 4 of 4', placeHolder: 'Assign to a group' }
               );
-              if (pick === undefined) break;
+              if (pick === undefined) { break; }
               if (pick === '+ New group…') {
                 const ng = await vscode.window.showInputBox({ prompt: 'New group name' });
                 group = ng?.trim().toLowerCase() ?? '';
@@ -265,14 +265,14 @@ export function activate(context: vscode.ExtensionContext) {
               validateInput: v => /^[A-Z_][A-Z0-9_]*$/i.test(v.trim())
                 ? undefined : 'Letters, numbers, underscores only',
             });
-            if (!key) break;
+            if (!key) { break; }
 
             const value = await vscode.window.showInputBox({
               title: 'Add Env Var — 2 of 2',
               prompt: `Value for $${key.trim()}`,
               placeHolder: 'e.g. 3000',
             });
-            if (value === undefined) break;
+            if (value === undefined) { break; }
 
             const existing = envVars.findIndex(e => e.key === key.trim());
             if (existing >= 0) {
@@ -304,18 +304,18 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
       vscode.window.onDidStartTerminalShellExecution(async (e) => {
         const rawCmd = e.execution.commandLine.value.trim();
-        if (!rawCmd || rawCmd.length < 3) return;
-        if (commands.some(c => c.cmd === rawCmd)) return;
+        if (!rawCmd || rawCmd.length < 3) { return; }
+        if (commands.some(c => c.cmd === rawCmd)) { return; }
         const firstWord = rawCmd.split(' ')[0];
-        if (NOISY_CMDS.has(firstWord)) return;
+        if (NOISY_CMDS.has(firstWord)) { return; }
 
         const action = await vscode.window.showInformationMessage(
           `Add "${rawCmd}" to Macro Bar?`, 'Add', 'Dismiss'
         );
-        if (action !== 'Add') return;
+        if (action !== 'Add') { return; }
 
         const label = await vscode.window.showInputBox({ prompt: 'Button label', value: firstWord });
-        if (!label) return;
+        if (!label) { return; }
 
         const desc = await vscode.window.showInputBox({ prompt: 'Description', placeHolder: 'What does this command do?' });
 
@@ -323,7 +323,7 @@ export function activate(context: vscode.ExtensionContext) {
         let group = '';
         if (existingGroups.length) {
           const pick = await vscode.window.showQuickPick(['(no group)', ...existingGroups], { placeHolder: 'Assign to a group' });
-          if (pick && pick !== '(no group)') group = pick;
+          if (pick && pick !== '(no group)') { group = pick; }
         }
 
         commands.push({
@@ -344,7 +344,7 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[], codiconsUri: string)
   const sorted = cmds
     .map((c, i) => ({ ...c, originalIndex: i }))
     .sort((a, b) => {
-      if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+      if (a.pinned !== b.pinned) { return a.pinned ? -1 : 1; }
       return b.usageCount - a.usageCount;
     });
 
