@@ -255,11 +255,19 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[], codiconsUri: string)
       return b.usageCount - a.usageCount;
     });
 
+    const runSvg = `<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M4.74514 3.06414C4.41183 2.87665 4 3.11751 4 3.49993V12.5002C4 12.8826 4.41182 13.1235 4.74512 12.936L12.7454 8.43601C13.0852 8.24486 13.0852 7.75559 12.7454 7.56443L4.74514 3.06414ZM3 3.49993C3 2.35268 4.2355 1.63011 5.23541 2.19257L13.2357 6.69286C14.2551 7.26633 14.2551 8.73415 13.2356 9.30759L5.23537 13.8076C4.23546 14.37 3 13.6474 3 12.5002V3.49993Z"/></svg>`;
+    const runAboveSvg = `<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M15.854 11.853C15.756 11.95 15.628 11.999 15.5 11.999C15.372 11.999 15.244 11.951 15.146 11.853L14 10.707V15.5C14 15.776 13.776 16 13.5 16C13.224 16 13 15.776 13 15.5V10.707L11.854 11.853C11.659 12.048 11.342 12.048 11.147 11.853C10.952 11.658 10.952 11.341 11.147 11.146L13.147 9.14601C13.342 8.95101 13.659 8.95101 13.854 9.14601L15.854 11.146C16.049 11.341 16.049 11.658 15.854 11.853ZM4 12.5V3.50001C4 3.11801 4.412 2.87701 4.745 3.06401L12.745 7.56401C12.915 7.66001 13 7.83001 13 8.00001H14C14 7.49001 13.745 6.97901 13.235 6.69301L5.235 2.19301C4.235 1.63101 3 2.35301 3 3.50001V12.5C3 13.647 4.235 14.37 5.235 13.807L10 11.127V9.98001L4.745 12.936C4.412 13.124 4 12.883 4 12.5Z"/></svg>`;
+    const pinSvg = `<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M13.5 3C13.303 3 13.109 3.038 12.923 3.114L8.481 4.967L5.659 4.026C5.505 3.976 5.339 4.001 5.209 4.095C5.078 4.189 5.001 4.339 5.001 4.5V7H1.257L0.5 7.5L1.257 8H5V10.5C5 10.661 5.077 10.812 5.208 10.905C5.338 11 5.504 11.023 5.658 10.974L8.48 10.033L12.925 11.887C13.109 11.962 13.302 12 13.499 12C14.326 12 14.999 11.327 14.999 10.5V4.5C14.999 3.673 14.326 3 13.499 3H13.5ZM14 10.5C14 10.843 13.615 11.09 13.308 10.962L8.693 9.038C8.631 9.013 8.566 9 8.501 9C8.447 9 8.395 9.009 8.343 9.025L6.001 9.806V5.193L8.343 5.974C8.457 6.011 8.581 6.007 8.694 5.961L13.306 4.038C13.629 3.902 14.001 4.156 14.001 4.499V10.499L14 10.5Z"/></svg>`;
+    const pinnedSvg = `<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M10.0589 2.44511C9.34701 1.73063 8.14697 1.90829 7.67261 2.79839L5.6526 6.58878L2.8419 7.52568C2.6775 7.58048 2.5532 7.71649 2.51339 7.88514C2.47357 8.0538 2.52392 8.23104 2.64646 8.35357L4.79291 10.5L2.14645 13.1465L2 14L2.85356 13.8536L5.50002 11.2071L7.64646 13.3536C7.76899 13.4761 7.94623 13.5265 8.11489 13.4866C8.28354 13.4468 8.41955 13.3225 8.47435 13.1581L9.41143 10.3469L13.1897 8.32423C14.0759 7.84982 14.2538 6.6551 13.5443 5.94305L10.0589 2.44511ZM8.55511 3.2687C8.71323 2.972 9.11324 2.91278 9.35055 3.15094L12.836 6.64889C13.0725 6.88624 13.0131 7.28448 12.7178 7.44262L8.76403 9.55921C8.65137 9.61952 8.56608 9.72068 8.52567 9.84191L7.7815 12.0744L3.92562 8.21853L6.15812 7.47436C6.27966 7.43385 6.38101 7.34823 6.44126 7.23518L8.55511 3.2687Z"/></svg>`;
+    const unpinSvg = `<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M9.56016 10.2673L14.1464 14.8536C14.3417 15.0488 14.6583 15.0488 14.8536 14.8536C15.0488 14.6583 15.0488 14.3417 14.8536 14.1464L1.85355 1.14645C1.65829 0.951184 1.34171 0.951184 1.14645 1.14645C0.951184 1.34171 0.951184 1.65829 1.14645 1.85355L5.73223 6.43934L5.6526 6.58876L2.8419 7.52566C2.6775 7.58046 2.5532 7.71648 2.51339 7.88513C2.47357 8.05378 2.52392 8.23102 2.64646 8.35356L4.79291 10.5L2.14645 13.1465L2 14L2.85356 13.8536L5.50002 11.2071L7.64646 13.3536C7.76899 13.4761 7.94623 13.5264 8.11489 13.4866C8.28354 13.4468 8.41955 13.3225 8.47435 13.1581L9.41143 10.3469L9.56016 10.2673ZM8.82138 9.52849L8.76403 9.5592C8.65137 9.61951 8.56608 9.72066 8.52567 9.84189L7.7815 12.0744L3.92562 8.21851L6.15812 7.47435C6.27966 7.43383 6.38101 7.34822 6.44126 7.23516L6.47143 7.17854L8.82138 9.52849ZM12.7178 7.4426L10.6636 8.54227L11.4024 9.28105L13.1897 8.32422C14.0759 7.84981 14.2538 6.65509 13.5443 5.94304L10.0589 2.44509C9.34701 1.73062 8.14697 1.90828 7.67261 2.79838L6.71556 4.59421L7.45476 5.33341L8.55511 3.26869C8.71323 2.97199 9.11324 2.91277 9.35055 3.15093L12.836 6.64888C13.0725 6.88623 13.0131 7.28446 12.7178 7.4426Z"/></svg>`;
+    const trashSvg = `<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M14 2H10C10 0.897 9.103 0 8 0C6.897 0 6 0.897 6 2H2C1.724 2 1.5 2.224 1.5 2.5C1.5 2.776 1.724 3 2 3H2.54L3.349 12.708C3.456 13.994 4.55 15 5.84 15H10.159C11.449 15 12.543 13.993 12.65 12.708L13.459 3H13.999C14.275 3 14.499 2.776 14.499 2.5C14.499 2.224 14.275 2 13.999 2H14ZM8 1C8.551 1 9 1.449 9 2H7C7 1.449 7.449 1 8 1ZM11.655 12.625C11.591 13.396 10.934 14 10.16 14H5.841C5.067 14 4.41 13.396 4.346 12.625L3.544 3H12.458L11.656 12.625H11.655ZM7 5.5V11.5C7 11.776 6.776 12 6.5 12C6.224 12 6 11.776 6 11.5V5.5C6 5.224 6.224 5 6.5 5C6.776 5 7 5.224 7 5.5ZM10 5.5V11.5C10 11.776 9.776 12 9.5 12C9.224 12 9 11.776 9 11.5V5.5C9 5.224 9.224 5 9.5 5C9.776 5 10 5.224 10 5.5Z"/></svg>`;
+
+
   // ── Chips (row 1) ──
   const chips = sorted.map(c => `
     <div class="chip${c.pinned ? ' pinned' : ''}" data-index="${c.originalIndex}">
       <span class="dot" style="background:${c.color}"></span>
-      ${c.pinned ? '<span class="codicon codicon-pin pin-mark"></span>' : ''}
+      ${c.pinned ? pinnedSvg : ''}
       <span class="chip-label">${esc(c.label)}</span>
       ${c.usageCount > 0 ? `<span class="badge">${c.usageCount}</span>` : ''}
     </div>
@@ -270,14 +278,14 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[], codiconsUri: string)
     ? sorted.map(c => `
       <div class="row${c.pinned ? ' pinned' : ''}">
         <span class="row-dot" style="background:${c.color}"></span>
-        <span class="row-label">${esc(c.label)}${c.pinned ? ' <span class="codicon codicon-pin pin-icon"></span>' : ''}</span>
+        <span class="row-label">${esc(c.label)}${c.pinned ? ` ${pinnedSvg}` : ''}</span>
         <span class="row-cmd">${esc(c.cmd)}</span>
         <span class="row-desc">${esc(c.desc || '—')}</span>
         <div class="row-actions">
-          <button class="row-btn btn-run"  data-index="${c.originalIndex}" title="Run"><span class="codicon codicon-run"></span></button>
-          <button class="row-btn btn-args" data-index="${c.originalIndex}" title="Run with args"><span class="codicon codicon-run-above"></span></button>
-          <button class="row-btn btn-pin" data-index="${c.originalIndex}" title="${c.pinned ? 'Unpin' : 'Pin'}"><span class="codicon ${c.pinned ? 'codicon-pinned' : 'codicon-pin'}"></span></button>
-          <button class="row-btn btn-del"  data-index="${c.originalIndex}" title="Remove"><span class="codicon codicon-trash"></span></button>
+          <button class="row-btn btn-run"  data-index="${c.originalIndex}" title="Run">${runSvg}</button>
+          <button class="row-btn btn-args" data-index="${c.originalIndex}" title="Run with args">${runAboveSvg}</button>
+          <button class="row-btn btn-pin" data-index="${c.originalIndex}" title="${c.pinned ? 'Unpin' : 'Pin'}">${c.pinned ? unpinSvg : pinnedSvg}</button>
+          <button class="row-btn btn-del"  data-index="${c.originalIndex}" title="Remove">${trashSvg}</button>
         </div>
       </div>`).join('')
     : `<div class="empty-state">No macros yet — click <strong>+ Add</strong> to create one.</div>`;
@@ -433,9 +441,9 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[], codiconsUri: string)
   }
   .env-row:last-child { border-bottom: none; }
   .env-row:hover { background: var(--vscode-list-hoverBackground); }
-  .env-key { color: #9cdcfe; min-width: 80px; font-weight: 600; }
+  .env-key { color: #00a6ff; min-width: 80px; font-weight: 600; }
   .env-eq  { color: var(--vscode-descriptionForeground); }
-  .env-val { color: #ce9178; flex: 1; }
+  .env-val { color: #c95427; flex: 1; }
   .env-del {
     background: none; border: none; cursor: pointer;
     color: var(--vscode-errorForeground); font-size: 10px;
@@ -450,7 +458,7 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[], codiconsUri: string)
   }
   .env-empty code {
     font-family: monospace;
-    color: #9cdcfe;
+    color: #22b2ff;
     font-style: normal;
   }
 
@@ -505,7 +513,7 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[], codiconsUri: string)
   .row-cmd {
     font-family: monospace;
     font-size: 10px;
-    color: #9cdcfe;
+    color: #04a0fa;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -539,10 +547,10 @@ function buildHtml(cmds: MacroCommand[], envVars: EnvVar[], codiconsUri: string)
   }
   .row-btn:hover { opacity: 1; }
 
-  .btn-run  { color: #4ec9b0; border-color: #4ec9b0; }
-  .btn-run:hover  { background: #4ec9b0; color: #1e1e1e; }
-  .btn-args { color: #dcdcaa; border-color: #dcdcaa; }
-  .btn-args:hover { background: #dcdcaa; color: #1e1e1e; }
+  .btn-run  { color: #00c49c; border-color: #4ec9b0; }
+  .btn-run:hover  { background: #00c49c; color: #1e1e1e; }
+  .btn-args { color: #8643f3; border-color: #ab7ff3; }
+  .btn-args:hover { background: #8643f3; color: #1e1e1e; }
   .btn-pin  { color: var(--vscode-focusBorder); border-color: var(--vscode-focusBorder); }
   .btn-pin:hover  { background: var(--vscode-focusBorder); color: var(--vscode-button-foreground); }
   .btn-del  { color: var(--vscode-errorForeground); border-color: var(--vscode-errorForeground); }

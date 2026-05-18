@@ -4,6 +4,9 @@ Stop retyping your most-used terminal commands. Save them as one-click macros, w
 
 ---
 
+[!screenshot](./Capture.PNG)
+
+
 ## Features
 
 ### ▶ One-Click Macros
@@ -66,5 +69,5 @@ No settings required. All macros and env vars are stored in VS Code's global sta
 
 ## Release Notes
 
-### 0.0.1
+### 0.0.3
 Initial release — macros, env vars with recursive resolution, run-with-args, pin, auto-capture.
